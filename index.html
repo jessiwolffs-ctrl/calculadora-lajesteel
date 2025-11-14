@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-build="lajesteel-calculadora-v1" dir="ltr" data-chat-theme="blue">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Calculadora Steel Mold</title>
+
+    <!-- PWA Básico -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff">
+    <link rel="manifest" href="/manifest.json">
+
+    <style>
+        :root {
+            --bg-main: #f3f4f6;
+            --bg-card: #ffffff;
+            --border-subtle: #e5e7eb;
+            --primary: #2563eb;
+            --primary-soft: rgba(37, 99, 235, 0.08);
+            --primary-strong: #1d4ed8;
+            --accent: #16a34a;
+            --text-main: #0f172a;
+            --text-soft: #6b7280;
+            --danger: #b91c1c;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            padding: 24px;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: radial-gradient(circle at top, #e5edff 0, #f3f4f6 38%, #f9fafb 100%);
+            color: var(--text-main);
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+        }
+
+        .app-shell {
+            width: 100%;
+            max-width: 960px;
+        }
+
+        .brand-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+            padding: 4px 2px;
+        }
+
+        .brand-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-pill {
+            width: 40px;
+            height: 40px;
+            border-radius: 14px;
+            background: radial-gradient(circle at 30% 20%, #60a5fa 0, #2563eb 40%, #1d4ed8 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow:
+                0 12px 30px rgba(37, 99, 235, 0.45),
+                0 0 0 1px rgba(129, 140, 248, 0.35);
+        }
+
+        .logo-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 6px;
+            border: 2px solid #eff6ff;
+            position: relative;
+            background: rgba(15, 23, 42, 0.15);
+        }
+
+        .logo-icon::after {
+            content: "";
+            position: absolute;
+            inset: 3px;
+            border-radius: 4px;
+            border: 2px solid #22c55e;
+        }
+
+        .brand-text-main {
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            color: #0f172a;
+        }
+
+        .brand-text-sub {
+            font-size: 12px;
+            color: var(--text-soft);
+        }
+
+        .badge-online {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: rgba(22, 163, 74, 0.06);
+            color: #166534;
+            font-size: 11px;
+            border: 1px solid rgba(34, 197, 94, 0.35);
+        }
+
+        .badge-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: #22c55e;
+            box-shadow: 0 0 0 5px rgba(187, 247, 208, 0.85);
+        }
+
+        .layout-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+            gap: 18px;
+        }
+
+        @media (max-width: 860px) {
+            body {
+                padding: 14px;
+            }
+
+            .layout-grid {
+                grid-template-columns: minmax(0, 1fr);
+            }
+        }
+
+        .card {
+            width: 100%;
+            padding: 18px 16px 18px;
+            background: var(--bg-card);
+            border-radius: 18px;
+            border: 1px solid var(--border-subtle);
+            box-shadow:
+                0 18px 40px rgba(15, 23, 42, 0.06),
+                0 0 0 1px rgba(148, 163, 184, 0.35);
+            position: relative;
+            overflow: hidden;
+            animation: card-enter 0.4s ease-out;
+        }
+
+        .card::before {
+            content: "";
+            position: absolute;
+            inset: -40%;
+            background:
+                radial-gradient(circle at 0 0, rgba(191, 219, 254, 0.35) 0, transparent 55%),
+                radial-gradient(circle at 100% 0, rgba(187, 247, 208, 0.3) 0, transparent 55%);
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .card-inner {
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            font-size: 20px;
+            margin: 0 0 6px;
+            font-weight: 600;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .h1-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 8px;
+            background: rgba(37, 99, 235, 0.08);
+            border: 1px solid rgba(129, 140, 248, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #1d4ed8;
+        }
+
+        .subtitle {
+            font-size: 12px;
+            color: var(--text-soft);
+            margin-bottom: 14px;
+        }
+
+        .row-inline {
+            display: flex;
+            gap: 10px;
+        }
+
+        .field {
+            flex: 1;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 12px;
+            color: #4b5563;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 9px 10px;
+            border-radius: 10px;
+            border: 1px solid #d1d5db;
+            outline: none;
+            margin-bottom: 10px;
+            background: #f9fafb;
+            color: var(--text-main);
+            font-size: 13px;
+            transition: border 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, transform 0.08s ease;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: var(--primary);
+            background: #ffffff;
+            box-shadow:
+                0 0 0 1px rgba(37, 99, 235, 0.7),
+                0 0 0 6px rgba(191, 219, 254, 0.9);
+            transform: translateY(-1px);
+        }
+
+        input[type="radio"],
+        input[type="checkbox"] {
+            width: auto;
+            margin: 0 6px 0 0;
+            transform: translateY(1px);
+            accent-color: var(--primary);
+        }
+
+        .grupo {
+            margin-top: 10px;
+            padding: 10px 10px 8px;
+            border-radius: 12px;
+            background: #f9fafb;
+            border: 1px dashed #d1d5db;
+        }
+
+        .grupo-title {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 8px;
+            font-size: 12px;
+            color: #4b5563;
+        }
+
+        .grupo-chip {
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            background: #e5edff;
+            color: #1d4ed8;
+        }
+
+        .opcoes-parede {
+            margin-top: 8px;
+            padding-top: 6px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .linha-radio {
+            display: flex;
+            gap: 14px;
+            font-size: 12px;
+            flex-wrap: wrap;
+        }
+
+        .linha-checkbox {
+            font-size: 12px;
+            color: #111827;
+        }
+
+        .linha-checkbox label {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+
+        .btn-calcular {
+            margin-top: 14px;
+            width: 100%;
+            padding: 13px;
+            border-radius: 999px;
+            font-size: 15px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow:
+                0 18px 35px rgba(37, 99, 235, 0.45),
+                0 0 0 1px rgba(30, 64, 175, 0.5);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.12s ease, box-shadow 0.12s ease;
+        }
+
+        .btn-calcular span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-calcular::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 0 0, rgba(248, 250, 252, 0.6), transparent 55%);
+            opacity: 0;
+            transition: opacity 0.18s ease;
+        }
+
+        .btn-calcular:hover {
+            transform: translateY(-1px) scale(1.01);
+            box-shadow:
+                0 22px 40px rgba(30, 64, 175, 0.55),
+                0 0 0 1px rgba(30, 64, 175, 0.7);
+        }
+
+        .btn-calcular:hover::before {
+            opacity: 1;
+        }
+
+        .btn-icon {
+            width: 18px;
+            height: 18px;
+            border-radius: 999px;
+            border: 1px solid rgba(248, 250, 252, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            background: rgba(15, 23, 42, 0.15);
+        }
+
+        .btn-secundario {
+            margin-top: 8px;
+            width: 100%;
+            padding: 9px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 500;
+            background: #f9fafb;
+            color: #111827;
+            border: 1px dashed #cbd5f5;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-secundario span {
+            opacity: 0.95;
+        }
+
+        .badge-mini {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 999px;
+            background: #e0f2fe;
+            border: 1px solid #60a5fa;
+            color: #1d4ed8;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .helper-row {
+            margin-top: 8px;
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            font-size: 11px;
+            color: var(--text-soft);
+            flex-wrap: wrap;
+        }
+
+        .helper-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: 999px;
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
+        }
+
+        .spark {
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            border: 1px solid #f59e0b;
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.6);
+        }
+
+        .lista-comodos {
+            margin-top: 10px;
+            padding: 8px 9px 6px;
+            border-radius: 12px;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            max-height: 220px;
+            overflow-y: auto;
+        }
+
+        .lista-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+            font-size: 11px;
+            color: #6b7280;
+        }
+
+        .lista-item {
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            font-size: 12px;
+            padding: 6px 0 6px 0;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .lista-item:first-of-type {
+            border-top: none;
+        }
+
+        .lista-item-nome {
+            color: #111827;
+            font-weight: 500;
+        }
+
+        .lista-item-medidas {
+            color: #6b7280;
+            font-size: 11px;
+        }
+
+        .lista-item-extra {
+            color: #0f766e;
+            font-size: 11px;
+            margin-top: 2px;
+        }
+
+        .lista-item-right {
+            text-align: right;
+        }
+
+        .lista-item-area {
+            font-weight: 600;
+            color: #0f766e;
+            font-size: 11px;
+        }
+
+        .lista-item-vigas {
+            font-size: 11px;
+            color: #111827;
+            margin-top: 2px;
+        }
+
+        .btn-remove {
+            position: absolute;
+            top: 4px;
+            right: 0;
+            border: none;
+            background: transparent;
+            color: #9ca3af;
+            font-size: 12px;
+            cursor: pointer;
+            padding: 0 4px;
+        }
+
+        .btn-remove:hover {
+            color: #ef4444;
+        }
+
+        .resumo-comodos {
+            margin-top: 4px;
+            font-size: 11px;
+            color: #6b7280;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .resultado {
+            margin-top: 6px;
+            padding: 12px 12px 10px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #ecfdf3, #eff6ff);
+            border: 1px solid rgba(34, 197, 94, 0.4);
+            font-size: 13px;
+            animation: fade-up 0.3s ease-out;
+        }
+
+        .resultado-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .resultado-title {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #065f46;
+        }
+
+        .resultado-tag {
+            font-size: 10px;
+            padding: 3px 8px;
+            border-radius: 999px;
+            background: rgba(16, 185, 129, 0.1);
+            color: #047857;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+        }
+
+        .resultado-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .resultado-item {
+            padding: 7px 9px;
+            border-radius: 10px;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+        }
+
+        .resultado-label {
+            font-size: 11px;
+            color: #6b7280;
+            margin-bottom: 2px;
+        }
+
+        .resultado-value {
+            font-size: 13px;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .resultado-note {
+            margin-top: 8px;
+            font-size: 11px;
+            color: #047857;
+        }
+
+        .resultado-vigas-lista {
+            margin-top: 6px;
+            font-size: 11px;
+            color: #111827;
+        }
+
+        .resultado-vigas-lista span {
+            display: block;
+        }
+
+        .header-pedido {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 720px) {
+            .header-pedido {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .erro {
+            margin-top: 8px;
+            font-size: 11px;
+            color: var(--danger);
+        }
+
+        .btn-novo {
+            margin-top: 12px;
+            width: 100%;
+            padding: 9px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 500;
+            background: #ffffff;
+            color: #111827;
+            border: 1px solid #d1d5db;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-novo:hover {
+            background: #f3f4f6;
+        }
+
+        @keyframes card-enter {
+            from {
+                transform: translateY(16px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fade-up {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-shell">
+        <div class="brand-row">
+            <div class="brand-left">
+                <div class="logo-pill">
+                    <div class="logo-icon"></div>
+                </div>
+                <div>
+                    <div class="brand-text-main">LajeSteel • Steel Mold</div>
+                    <div class="brand-text-sub">Calculadora técnica de lajes treliçadas</div>
+                </div>
+            </div>
+            <div class="badge-online">
+                <div class="badge-dot"></div>
+                <span>Calculadora ativa</span>
+            </div>
+        </div>
+
+        <div class="layout-grid">
+            <!-- Coluna esquerda: dados + entrada de ambientes -->
+            <div class="card">
+                <div class="card-inner">
+                    <h1>
+                        <div class="h1-icon">⛏️</div>
+                        <span>Steel Mold – Multiambientes</span>
+                    </h1>
+                    <div class="subtitle">Preencha os dados do pedido, selecione o produto e cadastre os cômodos. A calculadora estima área, concreto, vigas e isopor.</div>
+
+                    <!-- Cabeçalho do pedido -->
+                    <div class="header-pedido grupo" style="margin-top: 6px;">
+                        <div class="field">
+                            <label for="clienteNome">Cliente</label>
+                            <input type="text" id="clienteNome" placeholder="Nome do cliente">
+                        </div>
+                        <div class="field">
+                            <label for="dataPedido">Data</label>
+                            <input type="date" id="dataPedido">
+                        </div>
+                        <div class="field">
+                            <label for="numeroPedido">Nº do pedido</label>
+                            <input type="text" id="numeroPedido" placeholder="Ex: 1024">
+                        </div>
+                        <div class="field">
+                            <label for="vendedor">Vendedor</label>
+                            <select id="vendedor">
+                                <option value="">Selecione</option>
+                                <option value="Gustavo Ferreira">Gustavo Ferreira</option>
+                                <option value="Douglas Ferreira">Douglas Ferreira</option>
+                                <option value="Hugo Rafael">Hugo Rafael</option>
+                                <option value="Salu Alves">Salu Alves</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Produto / Mercadoria -->
+                    <div class="grupo" style="margin-top: 10px;">
+                        <div class="grupo-title">
+                            <span>Tipo de mercadoria</span>
+                            <span class="grupo-chip">Capeamento automático</span>
+                        </div>
+                        <select id="produto">
+                            <option value="">Selecione o produto</option>
+                            <option value="TG08_H08">Steel Mold - TG08 com H08</option>
+                            <option value="TG08_H10">Steel Mold - TG08 com H10</option>
+                            <option value="TG12_H10">Steel Mold - TG12 com H10</option>
+                            <option value="TG12_H12">Steel Mold - TG12 com H12</option>
+                        </select>
+                        <div style="font-size: 11px; color: var(--text-soft); margin-top: 2px;">
+                            O volume de concreto é calculado pela área total × capeamento do produto escolhido.
+                        </div>
+                    </div>
+
+                    <!-- Nome do cômodo -->
+                    <div class="row-inline" style="margin-top: 10px;">
+                        <div class="field">
+                            <label for="nomeComodo">Nome do cômodo (opcional)</label>
+                            <input type="text" id="nomeComodo" placeholder="Ex: Sala, Quarto 1">
+                        </div>
+                    </div>
+
+                    <!-- Medidas -->
+                    <div class="row-inline">
+                        <div class="field">
+                            <label for="comprimento">Comprimento (m)</label>
+                            <input type="number" id="comprimento" placeholder="Ex: 8,00" step="0.01" min="0">
+                        </div>
+                        <div class="field">
+                            <label for="largura">Largura (m)</label>
+                            <input type="number" id="largura" placeholder="Ex: 4,00" step="0.01" min="0">
+                        </div>
+                    </div>
+
+                    <!-- Paredes -->
+                    <div class="grupo">
+                        <div class="grupo-title">
+                            <span>As medidas incluem paredes?</span>
+                            <span class="grupo-chip">Perímetro</span>
+                        </div>
+
+                        <div class="linha-radio">
+                            <label>
+                                <input type="radio" name="parede" id="incluiSim" value="sim"> Sim, já com paredes
+                            </label>
+                            <label>
+                                <input type="radio" name="parede" id="incluiNao" value="nao"> Não, preciso somar
+                            </label>
+                        </div>
+
+                        <div id="paredeOpcoes" class="opcoes-parede">
+                            <div class="linha-checkbox">
+                                <label>
+                                    <input type="checkbox" id="frente">
+                                    Frente (+0,20 m comprimento)
+                                </label>
+                                <br>
+                                <label>
+                                    <input type="checkbox" id="fundo">
+                                    Fundo (+0,20 m comprimento)
+                                </label>
+                                <br>
+                                <label>
+                                    <input type="checkbox" id="direita">
+                                    Direita (+0,20 m largura)
+                                </label>
+                                <br>
+                                <label>
+                                    <input type="checkbox" id="esquerda">
+                                    Esquerda (+0,20 m largura)
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Direção das vigas -->
+                    <div class="grupo" style="margin-top: 10px;">
+                        <div class="grupo-title">
+                            <span>Direção das vigas</span>
+                            <span class="grupo-chip">Vãos</span>
+                        </div>
+                        <div class="linha-radio">
+                            <label>
+                                <input type="radio" name="direcaoViga" id="dirMenor" value="menor"> Vigas no lado menor
+                            </label>
+                            <label>
+                                <input type="radio" name="direcaoViga" id="dirMaior" value="maior"> Vigas no lado maior
+                            </label>
+                        </div>
+                        <div style="font-size: 11px; color: var(--text-soft); margin-top: 4px;">
+                            Quantidade de vigas = lado perpendicular × 1,9. Comprimento da viga arredondado conforme regra técnica.
+                        </div>
+                    </div>
+
+                    <!-- Seção de múltiplos cômodos -->
+                    <button class="btn-secundario" id="btnAddComodo">
+                        <span>Adicionar cômodo à lista</span>
+                        <span class="badge-mini">multi-ambiente</span>
+                    </button>
+
+                    <div id="listaComodos" class="lista-comodos hidden"></div>
+                    <div id="resumoComodos" class="resumo-comodos hidden"></div>
+
+                    <!-- Botão principal -->
+                    <button class="btn-calcular" id="btnCalcular">
+                        <span>Calcular laje</span>
+                        <div class="btn-icon">➜</div>
+                    </button>
+
+                    <div class="helper-row">
+                        <div class="helper-chip">
+                            <div class="spark"></div>
+                            <span>Estimativa técnica, não substitui projeto estrutural.</span>
+                        </div>
+                        <div class="helper-chip">
+                            <span>Se não adicionar cômodos, o cálculo usa apenas o ambiente acima.</span>
+                        </div>
+                    </div>
+
+                    <div id="erro" class="erro hidden"></div>
+                </div>
+            </div>
+
+            <!-- Coluna direita: resumo do cálculo -->
+            <div class="card">
+                <div class="card-inner">
+                    <h1>
+                        <div class="h1-icon">📊</div>
+                        <span>Resumo do cálculo</span>
+                    </h1>
+                    <div class="subtitle">Veja a área total, concreto estimado, total de vigas e isopor.</div>
+
+                    <div id="resultado" class="resultado hidden">
+                        <div class="resultado-header">
+                            <div class="resultado-title">
+                                <span id="resTitulo">Sem dados ainda</span>
+                            </div>
+                            <div class="resultado-tag" id="resultadoTag">—</div>
+                        </div>
+                        <div class="resultado-grid">
+                            <div class="resultado-item">
+                                <div class="resultado-label">Área total aproximada</div>
+                                <div class="resultado-value" id="resArea">0,00 m²</div>
+                            </div>
+                            <div class="resultado-item">
+                                <div class="resultado-label">Concreto (capeamento)</div>
+                                <div class="resultado-value" id="resConcreto">0,000 m³ • 0 L</div>
+                            </div>
+                            <div class="resultado-item">
+                                <div class="resultado-label">Qtd. vigas (total)</div>
+                                <div class="resultado-value" id="resVigas">0 un</div>
+                            </div>
+                            <div class="resultado-item">
+                                <div class="resultado-label">Qtd. isopor (total)</div>
+                                <div class="resultado-value" id="resIsopor">0 un</div>
+                            </div>
+                            <div class="resultado-item">
+                                <div class="resultado-label">Comprimento de referência</div>
+                                <div class="resultado-value" id="resCompViga">—</div>
+                            </div>
+                            <div class="resultado-item">
+                                <div class="resultado-label">Direção das vigas</div>
+                                <div class="resultado-value" id="resDirecao">—</div>
+                            </div>
+                        </div>
+                        <div class="resultado-note" id="resultadoNote">
+                            Fator 1,9 aplicado para vigas e isopor. Capeamento conforme produto selecionado.
+                        </div>
+                    </div>
+
+                    <!-- QUADRO ÚNICO: Vigas para fabricação -->
+                    <div id="fabricacaoBox" class="resultado hidden" style="margin-top: 10px;">
+                        <div class="resultado-header">
+                            <div class="resultado-title">
+                                <span>Vigas para fabricação</span>
+                            </div>
+                            <div class="resultado-tag" id="fabricacaoProduto">—</div>
+                        </div>
+                        <div class="resultado-vigas-lista" id="fabricacaoLista"></div>
+                        <div class="resultado-note" id="fabricacaoNote">
+                            Vigas agrupadas por metragem em ordem decrescente. Isopor listado ao final, de acordo com o produto selecionado.
+                        </div>
+                    </div>
+
+                    <div id="resultadoVazio" class="resultado-note">
+                        Nenhum cálculo realizado ainda. Preencha os campos à esquerda e clique em "Calcular laje".
+                    </div>
+
+                    <!-- Botão para novo cálculo -->
+                    <button id="btnNovoCalculo" class="btn-novo">
+                        <span>Fazer novo cálculo</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Produtos e capeamento
+        const PRODUTOS = {
+            TG08_H08: { label: 'Steel Mold - TG08 com H08', capeamento: 0.069, eps: 'H08' },
+            TG08_H10: { label: 'Steel Mold - TG08 com H10', capeamento: 0.074, eps: 'H10' },
+            TG12_H10: { label: 'Steel Mold - TG12 com H10', capeamento: 0.084, eps: 'H10' },
+            TG12_H12: { label: 'Steel Mold - TG12 com H12', capeamento: 0.079, eps: 'H12' },
+        };
+
+        // Referências de elementos
+        const incluiSim = document.getElementById('incluiSim');
+        const incluiNao = document.getElementById('incluiNao');
+        const paredeOpcoes = document.getElementById('paredeOpcoes');
+        const checkFrente = document.getElementById('frente');
+        const checkFundo = document.getElementById('fundo');
+        const checkDireita = document.getElementById('direita');
+        const checkEsquerda = document.getElementById('esquerda');
+
+        const dirMenor = document.getElementById('dirMenor');
+        const dirMaior = document.getElementById('dirMaior');
+
+        const inputNome = document.getElementById('nomeComodo');
+        const inputComp = document.getElementById('comprimento');
+        const inputLarg = document.getElementById('largura');
+        const selectProduto = document.getElementById('produto');
+
+        const btnCalcular = document.getElementById('btnCalcular');
+        const btnAddComodo = document.getElementById('btnAddComodo');
+        const btnNovoCalculo = document.getElementById('btnNovoCalculo');
+
+        const erroBox = document.getElementById('erro');
+
+        const resultadoBox = document.getElementById('resultado');
+        const resultadoVazio = document.getElementById('resultadoVazio');
+        const resultadoTag = document.getElementById('resultadoTag');
+        const resultadoNote = document.getElementById('resultadoNote');
+        const resTitulo = document.getElementById('resTitulo');
+
+        const resArea = document.getElementById('resArea');
+        const resConcreto = document.getElementById('resConcreto');
+        const resCompViga = document.getElementById('resCompViga');
+        const resVigas = document.getElementById('resVigas');
+        const resIsopor = document.getElementById('resIsopor');
+        const resDirecao = document.getElementById('resDirecao');
+
+        const listaComodos = document.getElementById('listaComodos');
+        const resumoComodos = document.getElementById('resumoComodos');
+
+        const fabricacaoBox = document.getElementById('fabricacaoBox');
+        const fabricacaoProduto = document.getElementById('fabricacaoProduto');
+        const fabricacaoLista = document.getElementById('fabricacaoLista');
+
+        const inputCliente = document.getElementById('clienteNome');
+        const inputDataPedido = document.getElementById('dataPedido');
+        const inputNumeroPedido = document.getElementById('numeroPedido');
+        const selectVendedor = document.getElementById('vendedor');
+
+        let comodos = [];
+
+        function formatNumber(num, dec) {
+            if (isNaN(num)) return '0,00';
+            return num.toFixed(dec).replace('.', ',');
+        }
+
+        // Arredondamento: acima de 0,3 sobe, até 0,3 mantém (para quantidade de vigas/isopor)
+        function customRound(valor) {
+            const base = Math.floor(valor);
+            const decimal = valor - base;
+            if (decimal > 0.3) return Math.ceil(valor);
+            return base;
+        }
+
+        // Arredondar comprimento das vigas "técnico" (para cálculo interno, caso precise)
+        // Aqui mantemos a lógica anterior na faixa 0,20–0,30
+        function roundVigaLength(valor) {
+            let val = Math.round(valor * 100) / 100;
+            let inteiro = Math.floor(val);
+            let decimal = +(val - inteiro).toFixed(2);
+
+            if (decimal >= 0.20 && decimal <= 0.23) {
+                decimal = 0.20;
+            } else if (decimal >= 0.24 && decimal <= 0.27) {
+                decimal = 0.25;
+            } else if (decimal >= 0.28 && decimal <= 0.30) {
+                decimal = 0.30;
+            }
+
+            return +(inteiro + decimal).toFixed(2);
+        }
+
+        // Arredondar para uso ESPECÍFICO no quadro "Vigas para fabricação"
+        // Sempre em casas de 5 em 5 cm (…4,20 / 4,25 / 4,30 / 4,50 etc)
+        function roundFabricacaoLength(valor) {
+            let val = Math.round(valor * 100) / 100; // 2 casas
+            let inteiro = Math.floor(val);
+            let decimal = +(val - inteiro).toFixed(2); // ex.: 0.52
+
+            // Passo de 0,05
+            const step = 0.05;
+            let steps = Math.round(decimal / step); // arredonda para múltiplo mais próximo
+
+            let decimalArred = +(steps * step).toFixed(2);
+
+            // Ajuste se, por arredondamento, passar de 1,00
+            if (decimalArred >= 1) {
+                inteiro += 1;
+                decimalArred = 0;
+            }
+
+            return +(inteiro + decimalArred).toFixed(2);
+        }
+
+        function atualizarEstadoParedes() {
+            const habilitar = incluiNao.checked;
+            [checkFrente, checkFundo, checkDireita, checkEsquerda].forEach(el => {
+                el.disabled = !habilitar;
+                if (!habilitar) el.checked = false;
+            });
+            paredeOpcoes.style.opacity = habilitar ? '1' : '0.5';
+        }
+
+        incluiSim.addEventListener('change', atualizarEstadoParedes);
+        incluiNao.addEventListener('change', atualizarEstadoParedes);
+
+        // Estado inicial
+        incluiNao.checked = true;
+        atualizarEstadoParedes();
+
+        function obterMedidasComParedes(comp, larg) {
+            let compFinal = comp;
+            let largFinal = larg;
+
+            if (incluiNao.checked) {
+                if (checkFrente.checked) compFinal += 0.2;
+                if (checkFundo.checked) compFinal += 0.2;
+                if (checkDireita.checked) largFinal += 0.2;
+                if (checkEsquerda.checked) largFinal += 0.2;
+            }
+
+            return { compFinal, largFinal };
+        }
+
+        function calcularVigasEIsopor(compFinal, largFinal, area) {
+            const maior = Math.max(compFinal, largFinal);
+            const menor = Math.min(compFinal, largFinal);
+
+            let comprimentoViga;
+            let eixoReferencia;
+            let direcaoTexto;
+
+            if (dirMenor.checked) {
+                comprimentoViga = menor;
+                eixoReferencia = maior;
+                direcaoTexto = 'Vigas no lado menor';
+            } else {
+                comprimentoViga = maior;
+                eixoReferencia = menor;
+                direcaoTexto = 'Vigas no lado maior';
+            }
+
+            const comprimentoVigaArred = roundVigaLength(comprimentoViga);
+
+            const vigasFloat = eixoReferencia * 1.9;
+            const qtdVigas = customRound(vigasFloat);
+
+            const isoporFloat = area * 1.9;
+            const qtdIsopor = customRound(isoporFloat);
+
+            return {
+                comprimentoViga: comprimentoVigaArred,
+                qtdVigas,
+                qtdIsopor,
+                direcaoTexto,
+            };
+        }
+
+        function renderizarListaComodos() {
+            if (comodos.length === 0) {
+                listaComodos.classList.add('hidden');
+                resumoComodos.classList.add('hidden');
+                listaComodos.innerHTML = '';
+                resumoComodos.innerHTML = '';
+                return;
+            }
+
+            listaComodos.classList.remove('hidden');
+            resumoComodos.classList.remove('hidden');
+
+            let html = '<div class="lista-header">' +
+                '<span>Cômodos adicionados</span>' +
+                `<span>${comodos.length} ambiente(s)</span>` +
+                '</div>';
+
+            comodos.forEach((c, index) => {
+                html += `
+                    <div class="lista-item">
+                        <button class="btn-remove" data-index="${index}" title="Remover cômodo">×</button>
+                        <div>
+                            <div class="lista-item-nome">${c.nome || `Cômodo ${index + 1}`}</div>
+                            <div class="lista-item-medidas">${formatNumber(c.compFinal, 2)} × ${formatNumber(c.largFinal, 2)} m • ${formatNumber(c.area, 2)} m²</div>
+                            <div class="lista-item-extra">${c.direcaoTexto}</div>
+                        </div>
+                        <div class="lista-item-right">
+                            <div class="lista-item-area">${c.qtdVigas} vigas × ${formatNumber(c.comprimentoViga, 2)} m</div>
+                            <div class="lista-item-vigas">${c.qtdIsopor} isopor</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            listaComodos.innerHTML = html;
+
+            const areaTotal = comodos.reduce((sum, c) => sum + c.area, 0);
+            const totalVigas = comodos.reduce((sum, c) => sum + c.qtdVigas, 0);
+            const totalIsopor = comodos.reduce((sum, c) => sum + c.qtdIsopor, 0);
+
+            resumoComodos.innerHTML = `
+                <span>Total de ambientes: <strong>${comodos.length}</strong></span>
+                <span>Área somada: <strong>${formatNumber(areaTotal, 2)} m²</strong></span>
+                <span>Vigas: <strong>${totalVigas} un</strong></span>
+                <span>Isopor: <strong>${totalIsopor} un</strong></span>
+            `;
+        }
+
+        // Remover cômodo
+        listaComodos.addEventListener('click', (event) => {
+            const target = event.target;
+            if (target.classList.contains('btn-remove')) {
+                const idx = parseInt(target.getAttribute('data-index'), 10);
+                if (!isNaN(idx)) {
+                    comodos.splice(idx, 1);
+                    renderizarListaComodos();
+                }
+            }
+        });
+
+        function adicionarComodo() {
+            erroBox.classList.add('hidden');
+
+            const comp = parseFloat((inputComp.value || '').replace(',', '.'));
+            const larg = parseFloat((inputLarg.value || '').replace(',', '.'));
+
+            if (!comp || comp <= 0 || !larg || larg <= 0) {
+                erroBox.textContent = 'Informe comprimento e largura válidos para adicionar o cômodo.';
+                erroBox.classList.remove('hidden');
+                return;
+            }
+
+            if (!incluiSim.checked && !incluiNao.checked) {
+                erroBox.textContent = 'Selecione se as medidas já incluem as paredes antes de adicionar cômodos.';
+                erroBox.classList.remove('hidden');
+                return;
+            }
+
+            if (!dirMenor.checked && !dirMaior.checked) {
+                erroBox.textContent = 'Selecione a direção das vigas (lado menor ou maior) antes de adicionar o cômodo.';
+                erroBox.classList.remove('hidden');
+                return;
+            }
+
+            const nome = inputNome.value.trim();
+            const { compFinal, largFinal } = obterMedidasComParedes(comp, larg);
+            const area = compFinal * largFinal;
+
+            const vigasDados = calcularVigasEIsopor(compFinal, largFinal, area);
+
+            comodos.push({
+                nome,
+                compFinal,
+                largFinal,
+                area,
+                ...vigasDados,
+            });
+
+            inputNome.value = '';
+
+            renderizarListaComodos();
+        }
+
+        function calcularLaje() {
+            erroBox.classList.add('hidden');
+            fabricacaoBox.classList.add('hidden');
+            fabricacaoLista.innerHTML = '';
+
+            const produtoKey = selectProduto.value;
+            const produto = PRODUTOS[produtoKey];
+            if (!produto) {
+                erroBox.textContent = 'Selecione o tipo de mercadoria para calcular o capeamento do concreto.';
+                erroBox.classList.remove('hidden');
+                return;
+            }
+
+            let areaTotal = 0;
+            let totalVigas = 0;
+            let totalIsopor = 0;
+            let comprimentoReferencia = '—';
+            let direcaoTexto = '—';
+            let mapaVigas = {};
+
+            if (comodos.length > 0) {
+                // Multiambiente
+                areaTotal = comodos.reduce((sum, c) => sum + c.area, 0);
+                totalVigas = comodos.reduce((sum, c) => sum + c.qtdVigas, 0);
+                totalIsopor = comodos.reduce((sum, c) => sum + c.qtdIsopor, 0);
+
+                comodos.forEach((c) => {
+                    const key = c.comprimentoViga.toFixed(2);
+                    if (!mapaVigas[key]) mapaVigas[key] = 0;
+                    mapaVigas[key] += c.qtdVigas;
+                });
+
+                comprimentoReferencia = formatNumber(comodos[0].comprimentoViga, 2) + ' m';
+                direcaoTexto = comodos[0].direcaoTexto + ' (referência)';
+
+                resultadoTag.textContent = 'Vários cômodos';
+                resTitulo.textContent = 'Projeto multiambientes';
+            } else {
+                // Ambiente único
+                const comp = parseFloat((inputComp.value || '').replace(',', '.'));
+                const larg = parseFloat((inputLarg.value || '').replace(',', '.'));
+
+                if (!comp || comp <= 0 || !larg || larg <= 0) {
+                    erroBox.textContent = 'Informe comprimento e largura válidos para realizar o cálculo.';
+                    erroBox.classList.remove('hidden');
+                    return;
+                }
+
+                if (!incluiSim.checked && !incluiNao.checked) {
+                    erroBox.textContent = 'Selecione se as medidas já incluem as paredes ou se precisa somar.';
+                    erroBox.classList.remove('hidden');
+                    return;
+                }
+
+                if (!dirMenor.checked && !dirMaior.checked) {
+                    erroBox.textContent = 'Selecione a direção das vigas (lado menor ou maior) para calcular.';
+                    erroBox.classList.remove('hidden');
+                    return;
+                }
+
+                const medidas = obterMedidasComParedes(comp, larg);
+                const compFinal = medidas.compFinal;
+                const largFinal = medidas.largFinal;
+                areaTotal = compFinal * largFinal;
+
+                const vigasDados = calcularVigasEIsopor(compFinal, largFinal, areaTotal);
+                totalVigas = vigasDados.qtdVigas;
+                totalIsopor = vigasDados.qtdIsopor;
+                comprimentoReferencia = formatNumber(vigasDados.comprimentoViga, 2) + ' m';
+                direcaoTexto = vigasDados.direcaoTexto;
+
+                const key = vigasDados.comprimentoViga.toFixed(2);
+                mapaVigas[key] = totalVigas;
+
+                resultadoTag.textContent = 'Ambiente único';
+                resTitulo.textContent = 'Ambiente único';
+            }
+
+            // QUADRO VIGAS PARA FABRICAÇÃO
+            const chavesMapa = Object.keys(mapaVigas);
+            if (chavesMapa.length > 0) {
+                // Primeiro, cria um mapa para fabricação com comprimento arredondado em 5 em 5 cm
+                const mapaFabricacao = {};
+
+                chavesMapa.forEach((lenStr) => {
+                    const len = parseFloat(lenStr);
+                    const lenFab = roundFabricacaoLength(len);
+                    const keyFab = lenFab.toFixed(2);
+                    if (!mapaFabricacao[keyFab]) mapaFabricacao[keyFab] = 0;
+                    mapaFabricacao[keyFab] += mapaVigas[lenStr];
+                });
+
+                const comprimentosDesc = Object.keys(mapaFabricacao)
+                    .map(parseFloat)
+                    .sort((a, b) => b - a); // ordem decrescente
+
+                let linhasFab = '';
+                comprimentosDesc.forEach((len) => {
+                    const key = len.toFixed(2);
+                    const qtd = mapaFabricacao[key];
+                    linhasFab += `<span>${qtd} vigas ${formatNumber(len, 2)}</span>`;
+                });
+
+                const eps = produto.eps || '';
+                const epsLabel = eps ? ` Isopor ${eps}` : ' Isopor';
+                linhasFab += `<span style="margin-top:4px; display:block;">${totalIsopor}${epsLabel}</span>`;
+
+                fabricacaoLista.innerHTML = linhasFab;
+                fabricacaoProduto.textContent = produto.label;
+                fabricacaoBox.classList.remove('hidden');
+            }
+
+            const volumeM3 = areaTotal * produto.capeamento;
+            const volumeLitros = volumeM3 * 1000;
+
+            resArea.textContent = formatNumber(areaTotal, 2) + ' m²';
+            resConcreto.textContent = `${formatNumber(volumeM3, 3)} m³ • ${formatNumber(volumeLitros, 0)} L`;
+            resVigas.textContent = `${totalVigas} un`;
+            resIsopor.textContent = `${totalIsopor} un`;
+            resCompViga.textContent = comprimentoReferencia;
+            resDirecao.textContent = direcaoTexto;
+
+            resultadoBox.classList.remove('hidden');
+            resultadoBox.style.animation = 'none';
+            void resultadoBox.offsetWidth;
+            resultadoBox.style.animation = 'fade-up 0.25s ease-out';
+
+            resultadoVazio.classList.add('hidden');
+        }
+
+        function resetarFormulario() {
+            // Campos do pedido
+            inputCliente.value = '';
+            inputDataPedido.value = '';
+            inputNumeroPedido.value = '';
+            selectVendedor.value = '';
+
+            // Produto
+            selectProduto.value = '';
+
+            // Ambiente atual
+            inputNome.value = '';
+            inputComp.value = '';
+            inputLarg.value = '';
+
+            incluiSim.checked = false;
+            incluiNao.checked = true;
+            checkFrente.checked = false;
+            checkFundo.checked = false;
+            checkDireita.checked = false;
+            checkEsquerda.checked = false;
+            atualizarEstadoParedes();
+
+            dirMenor.checked = false;
+            dirMaior.checked = false;
+
+            // Cômodos
+            comodos = [];
+            renderizarListaComodos();
+
+            // Resultado
+            resultadoBox.classList.add('hidden');
+            fabricacaoBox.classList.add('hidden');
+            fabricacaoLista.innerHTML = '';
+            resultadoVazio.classList.remove('hidden');
+            erroBox.classList.add('hidden');
+        }
+
+        btnAddComodo.addEventListener('click', (e) => {
+            e.preventDefault();
+            adicionarComodo();
+        });
+
+        btnCalcular.addEventListener('click', (e) => {
+            e.preventDefault();
+            calcularLaje();
+        });
+
+        btnNovoCalculo.addEventListener('click', (e) => {
+            e.preventDefault();
+            resetarFormulario();
+        });
+
+        [inputComp, inputLarg].forEach((el) => {
+            el.addEventListener('keyup', (event) => {
+                if (event.key === 'Enter') calcularLaje();
+            });
+        });
+
+        // PWA - service worker (opcional)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').catch((err) => {
+                    console.log('SW não registrado:', err);
+                });
+            });
+        }
+    </script>
+</body>
+
+</html>
